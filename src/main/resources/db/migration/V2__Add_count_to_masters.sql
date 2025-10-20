@@ -1,0 +1,5 @@
+ALTER TABLE masters ADD COLUMN count INTEGER;
+
+UPDATE masters SET count = 0;
+
+ALTER TABLE masters ALTER COLUMN count SET NOT NULL;

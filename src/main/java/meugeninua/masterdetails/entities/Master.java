@@ -19,6 +19,9 @@ public class Master {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "master", orphanRemoval = true)
     private List<Detail> details;
 
+    @Column(name = "count", nullable = false)
+    private Integer count;
+
     public Long getId() {
         return id;
     }
@@ -41,5 +44,13 @@ public class Master {
 
     public void setDetails(List<Detail> details) {
         this.details = details;
+    }
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
     }
 }

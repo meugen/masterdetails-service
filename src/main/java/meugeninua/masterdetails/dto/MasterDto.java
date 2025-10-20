@@ -7,6 +7,7 @@ public class MasterDto {
     private Long id;
     private String name;
     private List<DetailDto> details;
+    private Integer count;
 
     public Long getId() {
         return id;
@@ -30,5 +31,13 @@ public class MasterDto {
 
     public void setDetails(List<DetailDto> details) {
         this.details = details;
+    }
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
     }
 }

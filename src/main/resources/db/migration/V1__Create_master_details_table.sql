@@ -1,0 +1,23 @@
+CREATE TABLE masters (
+    id BIGINT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE details (
+    id BIGINT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    master_id BIGINT NOT NULL,
+    CONSTRAINT fk_master FOREIGN KEY (master_id) REFERENCES masters (id)
+);
+
+CREATE SEQUENCE masters_sequence
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    NO MAXVALUE;
+
+CREATE SEQUENCE details_sequence
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    NO MAXVALUE;

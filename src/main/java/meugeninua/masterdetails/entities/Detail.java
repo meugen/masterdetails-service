@@ -15,7 +15,7 @@ public class Detail {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "master_id")
+    @JoinColumn(name = "master_id", nullable = false)
     private Master master;
 
     public Long getId() {
