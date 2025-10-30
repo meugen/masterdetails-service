@@ -1,6 +1,10 @@
 package meugeninua.masterdetails.dto;
 
+import org.springframework.web.util.UriBuilder;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MasterDto {
 
@@ -39,5 +43,12 @@ public class MasterDto {
 
     public void setCount(Integer count) {
         this.count = count;
+    }
+
+    public Map<String, ?> withUri(UriBuilder builder) {
+        var result = new HashMap<String, Object>();
+        result.put("resource", this);
+        result.put("uri", builder.build(id).toString());
+        return result;
     }
 }

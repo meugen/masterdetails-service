@@ -4,23 +4,39 @@ import meugeninua.masterdetails.dto.MasterDto;
 import meugeninua.masterdetails.mappers.DetailEntityMapper;
 import meugeninua.masterdetails.mappers.MasterEntityMapper;
 import meugeninua.masterdetails.repositories.MasterRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Service
 public class MasterService {
 
-    @Autowired
-    private MasterRepository masterRepository;
-    @Autowired
-    private MasterEntityMapper masterMapper;
-    @Autowired
-    private DetailEntityMapper detailMapper;
+    private final MasterRepository masterRepository;
+    private final MasterEntityMapper masterMapper;
+    private final DetailEntityMapper detailMapper;
+
+    public MasterService(
+        MasterRepository masterRepository,
+        MasterEntityMapper masterMapper,
+        DetailEntityMapper detailMapper
+    ) {
+        this.masterRepository = masterRepository;
+        this.masterMapper = masterMapper;
+        this.detailMapper = detailMapper;
+    }
+
+    public Stream<MasterDto> findAll() {
+        var stream = StreamSupport.stream(
+            masterRepository.findAll().spliterator(),
+            false
+        );
+        return stream.map(masterMapper::mapToDto);
+    }
 
     public MasterDto findById(Long id) {
         return masterRepository.findById(id)
