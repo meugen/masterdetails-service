@@ -1,5 +1,7 @@
 package meugeninua.masterdetails.dto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.web.util.UriBuilder;
 
 import java.net.URI;
@@ -8,8 +10,11 @@ import java.util.List;
 public class MasterDto implements HasUri {
 
     private Long id;
+    @NotNull
     private String name;
+    @NotNull @Valid
     private List<DetailDto> details;
+    @NotNull
     private Integer count;
 
     public Long getId() {

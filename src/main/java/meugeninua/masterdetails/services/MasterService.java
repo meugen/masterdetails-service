@@ -3,7 +3,9 @@ package meugeninua.masterdetails.services;
 import meugeninua.masterdetails.dto.MasterDto;
 import meugeninua.masterdetails.mappers.DetailEntityMapper;
 import meugeninua.masterdetails.mappers.MasterEntityMapper;
+import meugeninua.masterdetails.prrocessors.Processor;
 import meugeninua.masterdetails.repositories.MasterRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,35 +21,39 @@ public class MasterService {
     private final MasterRepository masterRepository;
     private final MasterEntityMapper masterMapper;
     private final DetailEntityMapper detailMapper;
+    private final Processor masterProcessor;
 
     public MasterService(
         MasterRepository masterRepository,
         MasterEntityMapper masterMapper,
-        DetailEntityMapper detailMapper
+        DetailEntityMapper detailMapper,
+        @Qualifier("master") Processor masterProcessor
     ) {
         this.masterRepository = masterRepository;
         this.masterMapper = masterMapper;
         this.detailMapper = detailMapper;
+        this.masterProcessor = masterProcessor;
     }
 
-    public Stream<MasterDto> findAll() {
+    public Stream<?> findAll() {
         var stream = StreamSupport.stream(
             masterRepository.findAll().spliterator(),
             false
         );
-        return stream.map(masterMapper::mapToDto);
+        return stream.map(masterMapper::mapToDto).map(masterProcessor::process);
     }
 
-    public MasterDto findById(Long id) {
+    public Object findById(Long id) {
         return masterRepository.findById(id)
             .map(masterMapper::mapToDto)
+            .map(masterProcessor::process)
             .orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
             );
     }
 
     @Transactional
-    public MasterDto create(MasterDto master) {
+    public Object create(MasterDto master) {
         var details = master.getDetails();
         master.setDetails(new ArrayList<>());
         var masterEntity = masterMapper.mapToEntity(master);
@@ -55,11 +61,12 @@ public class MasterService {
         masterEntity.setDetails(detailMapper.mapToEntityList(masterEntity, details));
         masterEntity = masterRepository.save(masterEntity);
 
-        return masterMapper.mapToDto(masterEntity);
+        var result = masterMapper.mapToDto(masterEntity);
+        return masterProcessor.process(result);
     }
 
     @Transactional
-    public MasterDto update(Long id, MasterDto master) {
+    public Object update(Long id, MasterDto master) {
         if (!masterRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -71,7 +78,8 @@ public class MasterService {
         masterEntity.setDetails(detailMapper.mapToEntityList(masterEntity, details));
         masterEntity = masterRepository.save(masterEntity);
 
-        return masterMapper.mapToDto(masterEntity);
+        var result = masterMapper.mapToDto(masterEntity);
+        return masterProcessor.process(result);
     }
 
     @Transactional

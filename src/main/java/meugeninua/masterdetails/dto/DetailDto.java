@@ -1,6 +1,7 @@
 package meugeninua.masterdetails.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.web.util.UriBuilder;
 
 import java.net.URI;
@@ -8,6 +9,7 @@ import java.net.URI;
 public class DetailDto implements HasUri {
 
     private Long id;
+    @NotNull
     private String name;
     private Long masterId;
 
@@ -27,7 +29,7 @@ public class DetailDto implements HasUri {
         this.name = name;
     }
 
-    @JsonIgnore
+    @JsonIgnore @SuppressWarnings("unused")
     public Long getMasterId() {
         return masterId;
     }
