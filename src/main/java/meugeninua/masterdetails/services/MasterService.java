@@ -54,6 +54,7 @@ public class MasterService {
         masterEntity.setId(null);
         masterEntity.setDetails(detailMapper.mapToEntityList(masterEntity, details));
         masterEntity = masterRepository.save(masterEntity);
+
         return masterMapper.mapToDto(masterEntity);
     }
 
@@ -69,6 +70,7 @@ public class MasterService {
         masterEntity.setId(id);
         masterEntity.setDetails(detailMapper.mapToEntityList(masterEntity, details));
         masterEntity = masterRepository.save(masterEntity);
+
         return masterMapper.mapToDto(masterEntity);
     }
 

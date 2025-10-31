@@ -2,11 +2,10 @@ package meugeninua.masterdetails.dto;
 
 import org.springframework.web.util.UriBuilder;
 
-import java.util.HashMap;
+import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
-public class MasterDto {
+public class MasterDto implements HasUri {
 
     private Long id;
     private String name;
@@ -45,10 +44,8 @@ public class MasterDto {
         this.count = count;
     }
 
-    public Map<String, ?> withUri(UriBuilder builder) {
-        var result = new HashMap<String, Object>();
-        result.put("resource", this);
-        result.put("uri", builder.build(id).toString());
-        return result;
+    @Override
+    public URI buildUri(UriBuilder builder) {
+        return builder.build(id);
     }
 }
