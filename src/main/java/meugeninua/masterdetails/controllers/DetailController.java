@@ -6,12 +6,11 @@ import meugeninua.masterdetails.services.DetailService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.stream.Stream;
 
-@Controller
+@RestController
 @RequestMapping("/masters/{masterId}/details")
 public class DetailController {
 
@@ -27,8 +26,8 @@ public class DetailController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public Iterable<?> findAll(@PathVariable("masterId") Long masterId) {
-        return detailService.findAll(masterId).map(detailProcessor::process).toList();
+    public Stream<?> findAll(@PathVariable("masterId") Long masterId) {
+        return detailService.findAll(masterId).map(detailProcessor::process);
     }
 
     @GetMapping(value = "/{detailId}", produces =  MediaType.APPLICATION_JSON_VALUE)
