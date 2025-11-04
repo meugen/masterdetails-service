@@ -1,6 +1,8 @@
 package meugeninua.masterdetails.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.List;
 
@@ -17,6 +19,7 @@ public class Master {
     private String name;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "master", orphanRemoval = true)
+    @Fetch(FetchMode.SUBSELECT)
     private List<Detail> details;
 
     @Column(name = "count", nullable = false)

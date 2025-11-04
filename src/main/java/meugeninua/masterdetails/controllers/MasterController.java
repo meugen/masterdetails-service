@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.stream.Stream;
-
 @RestController
 @RequestMapping("/masters")
 public class MasterController {
@@ -20,7 +18,7 @@ public class MasterController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public Stream<?> findAll() {
+    public Iterable<?> findAll() {
         return masterService.findAll();
     }
 

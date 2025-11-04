@@ -1,22 +1,24 @@
 package meugeninua.masterdetails.services;
 
+import meugeninua.masterdetails.caching.CachingConstants;
 import meugeninua.masterdetails.dto.MasterDto;
 import meugeninua.masterdetails.mappers.DetailEntityMapper;
 import meugeninua.masterdetails.mappers.MasterEntityMapper;
 import meugeninua.masterdetails.prrocessors.Processor;
 import meugeninua.masterdetails.repositories.MasterRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Service
-public class MasterService {
+public class MasterService implements CachingConstants {
 
     private final MasterRepository masterRepository;
     private final MasterEntityMapper masterMapper;
@@ -35,14 +37,18 @@ public class MasterService {
         this.masterProcessor = masterProcessor;
     }
 
-    public Stream<?> findAll() {
+    @Cacheable(value = CACHE_MASTERS_LIST, keyGenerator = "noKey")
+    public Iterable<?> findAll() {
         var stream = StreamSupport.stream(
             masterRepository.findAll().spliterator(),
             false
         );
-        return stream.map(masterMapper::mapToDto).map(masterProcessor::process);
+        return stream.map(masterMapper::mapToDto)
+            .map(masterProcessor::process)
+            .toList();
     }
 
+    @Cacheable(CACHE_MASTER_BY_ID)
     public Object findById(Long id) {
         return masterRepository.findById(id)
             .map(masterMapper::mapToDto)
@@ -52,7 +58,14 @@ public class MasterService {
             );
     }
 
+    /**
+     * Create master resource
+     * @see meugeninua.masterdetails.caching.MasterCacheEvictProcessor to evict outdated cache after create
+     * @param master Body
+     * @return Created master content
+     */
     @Transactional
+    @CachePut(value = CACHE_MASTER_BY_ID, key = "#result['id']")
     public Object create(MasterDto master) {
         var details = master.getDetails();
         master.setDetails(new ArrayList<>());
@@ -65,7 +78,15 @@ public class MasterService {
         return masterProcessor.process(result);
     }
 
+    /**
+     * Update master resource
+     * @see meugeninua.masterdetails.caching.MasterCacheEvictProcessor to evict outdated cache after update
+     * @param id Master id to update
+     * @param master Body
+     * @return Updated master content
+     */
     @Transactional
+    @CachePut(value = CACHE_MASTER_BY_ID, key = "#result['id']")
     public Object update(Long id, MasterDto master) {
         if (!masterRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -82,11 +103,18 @@ public class MasterService {
         return masterProcessor.process(result);
     }
 
+    /**
+     * Delete master resource
+     * @see meugeninua.masterdetails.caching.MasterCacheEvictProcessor to evict outdated cache after delete
+     * @param id Master id
+     */
     @Transactional
     public void deleteById(Long id) {
         var master = masterRepository.findById(id).orElseThrow(
             () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
+        var dto = masterMapper.mapToDto(master);
         masterRepository.delete(master);
+        masterProcessor.process(dto);
     }
 }

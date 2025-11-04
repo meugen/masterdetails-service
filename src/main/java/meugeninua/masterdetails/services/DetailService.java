@@ -1,21 +1,23 @@
 package meugeninua.masterdetails.services;
 
+import meugeninua.masterdetails.caching.CachingConstants;
 import meugeninua.masterdetails.dto.DetailDto;
 import meugeninua.masterdetails.mappers.DetailEntityMapper;
 import meugeninua.masterdetails.prrocessors.Processor;
 import meugeninua.masterdetails.repositories.DetailRepository;
 import meugeninua.masterdetails.repositories.MasterRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Service
-public class DetailService {
+public class DetailService implements CachingConstants {
 
     private final MasterRepository masterRepository;
     private final DetailRepository detailRepository;
@@ -34,19 +36,23 @@ public class DetailService {
         this.detailProcessor = detailProcessor;
     }
 
-    public Stream<?> findAll(Long masterId) {
+    @Cacheable(value = CACHE_DETAILS_LIST, key = "#masterId")
+    public Iterable<?> findAll(Long masterId) {
         if (!masterRepository.existsById(masterId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         var stream = StreamSupport.stream(
-            detailRepository.findAllByMasterIdEquals(masterId).spliterator(),
+            detailRepository.findAllByMasterId(masterId).spliterator(),
             false
         );
-        return stream.map(detailMapper::mapToDto).map(detailProcessor::process);
+        return stream.map(detailMapper::mapToDto)
+            .map(detailProcessor::process)
+            .toList();
     }
 
+    @Cacheable(value = CACHE_DETAIL_BY_ID, key = "#masterId+'/'+#detailId")
     public Object findById(Long masterId, Long detailId) {
-        return detailRepository.findByMasterIdEqualsAndIdEquals(masterId, detailId)
+        return detailRepository.findByMasterIdAndId(masterId, detailId)
             .map(detailMapper::mapToDto)
             .map(detailProcessor::process)
             .orElseThrow(
@@ -54,7 +60,15 @@ public class DetailService {
             );
     }
 
+    /**
+     * Create detail resource
+     * @see meugeninua.masterdetails.caching.DetailCacheEvictProcessor to evict outdated cache after create
+     * @param masterId Master id
+     * @param detailDto Body
+     * @return Created detail content
+     */
     @Transactional
+    @CachePut(value = CACHE_DETAIL_BY_ID, key = "#result['masterId']+'/'+#result['id']")
     public Object create(Long masterId, DetailDto detailDto) {
         var master = masterRepository.findById(masterId).orElseThrow(
             () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
@@ -67,7 +81,16 @@ public class DetailService {
         return detailProcessor.process(result);
     }
 
+    /**
+     * Update detail resource
+     * @see meugeninua.masterdetails.caching.DetailCacheEvictProcessor to evict outdated cache after update
+     * @param masterId Master id
+     * @param detailId Detail id to update
+     * @param detailDto Body
+     * @return Updated detail content
+     */
     @Transactional
+    @CachePut(value = CACHE_DETAIL_BY_ID, key = "#result['masterId']+'/'+#result['id']")
     public Object update(Long masterId, Long detailId, DetailDto detailDto) {
         if (!detailRepository.existsByMasterIdEqualsAndIdEquals(masterId, detailId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -83,12 +106,20 @@ public class DetailService {
         return detailProcessor.process(result);
     }
 
+    /**
+     * Delete detail resource
+     * @see meugeninua.masterdetails.caching.DetailCacheEvictProcessor to evict outdated cache after delete
+     * @param masterId Master id
+     * @param detailId Detail id to delete
+     */
     @Transactional
     public void deleteById(Long masterId, Long detailId) {
-        var detail = detailRepository.findByMasterIdEqualsAndIdEquals(masterId, detailId)
+        var detail = detailRepository.findByMasterIdAndId(masterId, detailId)
             .orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
             );
+        var dto = detailMapper.mapToDto(detail);
         detailRepository.delete(detail);
+        detailProcessor.process(dto);
     }
 }

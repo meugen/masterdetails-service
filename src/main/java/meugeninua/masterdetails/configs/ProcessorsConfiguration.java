@@ -1,10 +1,15 @@
 package meugeninua.masterdetails.configs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import meugeninua.masterdetails.caching.DetailCacheEvictProcessor;
+import meugeninua.masterdetails.caching.MasterCacheEvictProcessor;
 import meugeninua.masterdetails.prrocessors.Processor;
+import meugeninua.masterdetails.prrocessors.ToMapProcessor;
 import meugeninua.masterdetails.prrocessors.WithUriProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriBuilder;
@@ -17,17 +22,31 @@ public class ProcessorsConfiguration {
 
     @Bean("master")
     @RequestScope
-    public Processor masterProcessor(ObjectMapper mapper) {
-        Processor processor = new EmptyProcessor();
-        processor = new WithUriProcessor(processor, mapper, buildUriBuilder(MASTER_URI_TEMPLATE));
+    public Processor masterProcessor(
+        ObjectMapper mapper,
+        HttpServletRequest request,
+        StringRedisTemplate redisTemplate
+    ) {
+        Processor processor = new ToMapProcessor(mapper);
+        processor = new WithUriProcessor(processor, buildUriBuilder(MASTER_URI_TEMPLATE));
+        if (!"GET".equals(request.getMethod())) {
+            processor = new MasterCacheEvictProcessor(processor, redisTemplate);
+        }
         return processor;
     }
 
     @Bean("detail")
     @RequestScope
-    public Processor detailProcessor(ObjectMapper mapper) {
-        Processor processor = new EmptyProcessor();
-        processor = new WithUriProcessor(processor, mapper, buildUriBuilder(DETAIL_URI_TEMPLATE));
+    public Processor detailProcessor(
+        ObjectMapper mapper,
+        HttpServletRequest request,
+        StringRedisTemplate redisTemplate
+    ) {
+        Processor processor = new ToMapProcessor(mapper);
+        processor = new WithUriProcessor(processor, buildUriBuilder(DETAIL_URI_TEMPLATE));
+        if (!"GET".equals(request.getMethod())) {
+            processor = new DetailCacheEvictProcessor(processor, redisTemplate);
+        }
         return processor;
     }
 
@@ -35,8 +54,4 @@ public class ProcessorsConfiguration {
         return ServletUriComponentsBuilder.fromCurrentContextPath().path(uriTemplate);
     }
 
-    private static class EmptyProcessor implements Processor {
-        @Override
-        public Object process(Object obj) { return obj; }
-    }
 }
