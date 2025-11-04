@@ -1,4 +1,4 @@
-FROM openjdk:21-jdk AS build
+FROM eclipse-temurin:21-jdk-alpine-3.22 AS build
 COPY pom.xml mvnw /app/
 COPY src /app/src/
 COPY .mvn /app/.mvn/
