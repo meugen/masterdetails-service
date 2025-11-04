@@ -29,7 +29,7 @@ public class DetailDto implements HasUri {
         this.name = name;
     }
 
-    @JsonIgnore @SuppressWarnings("unused")
+    @JsonIgnore
     public Long getMasterId() {
         return masterId;
     }

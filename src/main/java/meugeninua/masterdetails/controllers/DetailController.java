@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.stream.Stream;
-
 @RestController
 @RequestMapping("/masters/{masterId}/details")
 public class DetailController {
@@ -20,7 +18,7 @@ public class DetailController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public Stream<?> findAll(@PathVariable("masterId") Long masterId) {
+    public Iterable<?> findAll(@PathVariable("masterId") Long masterId) {
         return detailService.findAll(masterId);
     }
 
