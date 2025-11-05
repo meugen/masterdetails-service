@@ -1,7 +1,7 @@
 package meugeninua.masterdetails.caching;
 
 import meugeninua.masterdetails.dto.MasterDto;
-import meugeninua.masterdetails.prrocessors.Processor;
+import meugeninua.masterdetails.processors.Processor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.HashSet;

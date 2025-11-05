@@ -1,4 +1,4 @@
-package meugeninua.masterdetails.prrocessors;
+package meugeninua.masterdetails.processors;
 
 import meugeninua.masterdetails.dto.HasUri;
 import org.springframework.web.util.UriBuilder;
