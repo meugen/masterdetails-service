@@ -1,4 +1,4 @@
-package meugeninua.masterdetails.prrocessors;
+package meugeninua.masterdetails.processors;
 
 import java.util.Map;
 

@@ -3,7 +3,7 @@ package meugeninua.masterdetails.services;
 import meugeninua.masterdetails.caching.CachingConstants;
 import meugeninua.masterdetails.dto.DetailDto;
 import meugeninua.masterdetails.mappers.DetailEntityMapper;
-import meugeninua.masterdetails.prrocessors.Processor;
+import meugeninua.masterdetails.processors.Processor;
 import meugeninua.masterdetails.repositories.DetailRepository;
 import meugeninua.masterdetails.repositories.MasterRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Map;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -37,7 +38,7 @@ public class DetailService implements CachingConstants {
     }
 
     @Cacheable(value = CACHE_DETAILS_LIST, key = "#masterId")
-    public Iterable<?> findAll(Long masterId) {
+    public Iterable<Map<String, Object>> findAll(Long masterId) {
         if (!masterRepository.existsById(masterId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -51,7 +52,7 @@ public class DetailService implements CachingConstants {
     }
 
     @Cacheable(value = CACHE_DETAIL_BY_ID, key = "#masterId+'/'+#detailId")
-    public Object findById(Long masterId, Long detailId) {
+    public Map<String, Object> findById(Long masterId, Long detailId) {
         return detailRepository.findByMasterIdAndId(masterId, detailId)
             .map(detailMapper::mapToDto)
             .map(detailProcessor::process)
@@ -69,7 +70,7 @@ public class DetailService implements CachingConstants {
      */
     @Transactional
     @CachePut(value = CACHE_DETAIL_BY_ID, key = "#result['masterId']+'/'+#result['id']")
-    public Object create(Long masterId, DetailDto detailDto) {
+    public Map<String, Object> create(Long masterId, DetailDto detailDto) {
         var master = masterRepository.findById(masterId).orElseThrow(
             () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         );
@@ -91,7 +92,7 @@ public class DetailService implements CachingConstants {
      */
     @Transactional
     @CachePut(value = CACHE_DETAIL_BY_ID, key = "#result['masterId']+'/'+#result['id']")
-    public Object update(Long masterId, Long detailId, DetailDto detailDto) {
+    public Map<String, Object> update(Long masterId, Long detailId, DetailDto detailDto) {
         if (!detailRepository.existsByMasterIdEqualsAndIdEquals(masterId, detailId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }

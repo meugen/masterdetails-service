@@ -1,4 +1,4 @@
-package meugeninua.masterdetails.prrocessors;
+package meugeninua.masterdetails.processors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
