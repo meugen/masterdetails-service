@@ -13,5 +13,7 @@
 * Flyway
 * Redis
 * MapStruct
+* Docker
+* Docker Compose
 
 ### Can be tested at [masterdetails](https://masterdetails.meugen.in.ua/)
