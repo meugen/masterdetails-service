@@ -1,5 +1,4 @@
 # Service to process Master/Details resources
----
 
 ### Consists of two repositories:
 * masterdetails-service - main service implementation **You are here**
