@@ -1,9 +1,11 @@
 package meugeninua.masterdetails.util;
 
+import jakarta.annotation.Nullable;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,6 +30,17 @@ public class RedisUtil {
         try (var cursor = redisTemplate.scan(options)) {
             while (cursor.hasNext()) {
                 result.add(cursor.next());
+            }
+        }
+        return result;
+    }
+
+    @Nullable
+    public Long delete(Collection<String> keys) {
+        Long result = null;
+        for (var key : keys) {
+            if (redisTemplate.delete(key)) {
+                result = result == null ? 0L : result + 1;
             }
         }
         return result;
