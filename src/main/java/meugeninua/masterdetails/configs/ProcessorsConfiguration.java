@@ -7,6 +7,7 @@ import meugeninua.masterdetails.caching.MasterCacheEvictProcessor;
 import meugeninua.masterdetails.processors.Processor;
 import meugeninua.masterdetails.processors.ToMapProcessor;
 import meugeninua.masterdetails.processors.WithUriProcessor;
+import meugeninua.masterdetails.util.RedisUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -25,12 +26,13 @@ public class ProcessorsConfiguration {
     public Processor masterProcessor(
         ObjectMapper mapper,
         HttpServletRequest request,
-        StringRedisTemplate redisTemplate
+        StringRedisTemplate redisTemplate,
+        RedisUtil redisUtil
     ) {
         Processor processor = new ToMapProcessor(mapper);
         processor = new WithUriProcessor(processor, buildUriBuilder(MASTER_URI_TEMPLATE));
         if (!"GET".equals(request.getMethod())) {
-            processor = new MasterCacheEvictProcessor(processor, redisTemplate);
+            processor = new MasterCacheEvictProcessor(processor, redisTemplate, redisUtil);
         }
         return processor;
     }

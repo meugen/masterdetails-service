@@ -12,7 +12,10 @@ public class DetailCacheEvictProcessor implements Processor, CachingConstants {
     private final Processor baseProcessor;
     private final StringRedisTemplate redisTemplate;
 
-    public DetailCacheEvictProcessor(Processor baseProcessor, StringRedisTemplate redisTemplate) {
+    public DetailCacheEvictProcessor(
+        Processor baseProcessor,
+        StringRedisTemplate redisTemplate
+    ) {
         this.baseProcessor = baseProcessor;
         this.redisTemplate = redisTemplate;
     }

@@ -2,6 +2,7 @@ package meugeninua.masterdetails.caching;
 
 import meugeninua.masterdetails.dto.MasterDto;
 import meugeninua.masterdetails.processors.Processor;
+import meugeninua.masterdetails.util.RedisUtil;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.HashSet;
@@ -11,13 +12,16 @@ public class MasterCacheEvictProcessor implements Processor, CachingConstants {
 
     private final Processor baseProcessor;
     private final StringRedisTemplate redisTemplate;
+    private final RedisUtil redisUtil;
 
     public MasterCacheEvictProcessor(
         Processor baseProcessor,
-        StringRedisTemplate redisTemplate
+        StringRedisTemplate redisTemplate,
+        RedisUtil redisUtil
     ) {
         this.baseProcessor = baseProcessor;
         this.redisTemplate = redisTemplate;
+        this.redisUtil = redisUtil;
     }
 
     @Override
@@ -31,7 +35,7 @@ public class MasterCacheEvictProcessor implements Processor, CachingConstants {
 
     private void processMasterDto(MasterDto masterDto) {
         var detailByIdPattern = String.format("%s::%d/*", CACHE_DETAIL_BY_ID, masterDto.getId());
-        var keys = new HashSet<>(redisTemplate.keys(detailByIdPattern));
+        var keys = new HashSet<>(redisUtil.keys(detailByIdPattern));
         keys.add(String.format("%s::%d", CACHE_DETAILS_LIST, masterDto.getId()));
         keys.add(String.format("%s::%d", CACHE_MASTER_BY_ID, masterDto.getId()));
         keys.add(String.format("%s::", CACHE_MASTERS_LIST));
