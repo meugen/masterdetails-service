@@ -1,7 +1,9 @@
 package meugeninua.masterdetails.util;
 
-import jakarta.annotation.Nullable;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -35,14 +37,20 @@ public class RedisUtil {
         return result;
     }
 
-    @Nullable
-    public Long delete(Collection<String> keys) {
-        Long result = null;
-        for (var key : keys) {
-            if (Boolean.TRUE.equals(redisTemplate.delete(key))) {
-                result = result == null ? 0L : result + 1;
+    public long delete(Collection<String> keys) {
+        if (keys.isEmpty()) return 0;
+
+        var results = redisTemplate.executePipelined(new SessionCallback<>() {
+            @Override
+            public <K, V> Object execute(RedisOperations<K, V> operations) throws DataAccessException {
+                for (var key : keys) {
+                    redisTemplate.delete(key);
+                }
+                return null;
             }
-        }
-        return result;
+        });
+        return results.stream()
+            .filter(Boolean.TRUE::equals)
+            .count();
     }
 }
