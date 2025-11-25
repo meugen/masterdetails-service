@@ -26,11 +26,11 @@ public class CachingConfiguration {
         logger.info("Redis hostname: {}, port: {}", hostname, port);
 
         var configuration = new RedisStandaloneConfiguration(hostname, port);
-        var builder = JedisClientConfiguration.builder();
+        var clientConfigBuilder = JedisClientConfiguration.builder();
         if (useSsl) {
-            builder.useSsl();
+            clientConfigBuilder.useSsl();
         }
 
-        return new JedisConnectionFactory(configuration, builder.build());
+        return new JedisConnectionFactory(configuration, clientConfigBuilder.build());
     }
 }
