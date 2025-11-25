@@ -1,5 +1,6 @@
 package meugeninua.masterdetails.configs;
 
+import org.jboss.logging.Logger;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,11 +14,15 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 @EnableCaching
 public class CachingConfiguration {
 
+    private final Logger logger = Logger.getLogger(CachingConfiguration.class);
+
     @Bean
     public RedisConnectionFactory jedisConnectionFactory(Environment environment) {
         var hostname = environment.getProperty("REDIS_HOSTNAME", "localhost");
         var port = environment.getProperty("REDIS_PORT", Integer.class, 6379);
         var useSsl = environment.getProperty("REDIS_USE_SSL", Boolean.class, false);
+
+        logger.infov("Redis hostname: {}, port: {}, use-ssl: {}", hostname, port, useSsl);
 
         var configuration = new RedisStandaloneConfiguration(hostname, port);
         var clientConfigBuilder = JedisClientConfiguration.builder();
