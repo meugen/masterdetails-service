@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import meugeninua.masterdetails.caching.DetailCacheEvictProcessor;
 import meugeninua.masterdetails.caching.MasterCacheEvictProcessor;
 import meugeninua.masterdetails.processors.Processor;
+import meugeninua.masterdetails.processors.TempFieldProcessor;
 import meugeninua.masterdetails.processors.ToMapProcessor;
 import meugeninua.masterdetails.processors.WithUriProcessor;
 import meugeninua.masterdetails.util.RedisUtil;
@@ -32,6 +33,7 @@ public class ProcessorsConfiguration {
         if (!"GET".equals(request.getMethod())) {
             processor = new MasterCacheEvictProcessor(processor, redisUtil);
         }
+        processor = new TempFieldProcessor(processor);
         return processor;
     }
 
@@ -47,6 +49,7 @@ public class ProcessorsConfiguration {
         if (!"GET".equals(request.getMethod())) {
             processor = new DetailCacheEvictProcessor(processor, redisUtil);
         }
+        processor = new TempFieldProcessor(processor);
         return processor;
     }
 
