@@ -10,7 +10,6 @@ import meugeninua.masterdetails.processors.WithUriProcessor;
 import meugeninua.masterdetails.util.RedisUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriBuilder;
@@ -26,13 +25,12 @@ public class ProcessorsConfiguration {
     public Processor masterProcessor(
         ObjectMapper mapper,
         HttpServletRequest request,
-        StringRedisTemplate redisTemplate,
         RedisUtil redisUtil
     ) {
         Processor processor = new ToMapProcessor(mapper);
         processor = new WithUriProcessor(processor, buildUriBuilder(MASTER_URI_TEMPLATE));
         if (!"GET".equals(request.getMethod())) {
-            processor = new MasterCacheEvictProcessor(processor, redisTemplate, redisUtil);
+            processor = new MasterCacheEvictProcessor(processor, redisUtil);
         }
         return processor;
     }
@@ -42,12 +40,12 @@ public class ProcessorsConfiguration {
     public Processor detailProcessor(
         ObjectMapper mapper,
         HttpServletRequest request,
-        StringRedisTemplate redisTemplate
+        RedisUtil redisUtil
     ) {
         Processor processor = new ToMapProcessor(mapper);
         processor = new WithUriProcessor(processor, buildUriBuilder(DETAIL_URI_TEMPLATE));
         if (!"GET".equals(request.getMethod())) {
-            processor = new DetailCacheEvictProcessor(processor, redisTemplate);
+            processor = new DetailCacheEvictProcessor(processor, redisUtil);
         }
         return processor;
     }

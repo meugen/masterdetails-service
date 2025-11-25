@@ -39,7 +39,7 @@ public class RedisUtil {
     public Long delete(Collection<String> keys) {
         Long result = null;
         for (var key : keys) {
-            if (redisTemplate.delete(key)) {
+            if (Boolean.TRUE.equals(redisTemplate.delete(key))) {
                 result = result == null ? 0L : result + 1;
             }
         }
