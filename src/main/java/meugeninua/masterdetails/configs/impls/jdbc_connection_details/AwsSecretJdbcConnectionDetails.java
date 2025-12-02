@@ -10,6 +10,9 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueReques
 
 import java.util.Map;
 
+import static meugeninua.masterdetails.util.StringUtil.parseRegion;
+import static meugeninua.masterdetails.util.StringUtil.throwIfEmpty;
+
 public class AwsSecretJdbcConnectionDetails extends AbstractJdbcConnectionDetails {
 
     private static final String ENV_NAME_AWS_SECRET = "AWS_PGSQL_SECRET";
@@ -18,16 +21,17 @@ public class AwsSecretJdbcConnectionDetails extends AbstractJdbcConnectionDetail
         return environment.containsProperty(ENV_NAME_AWS_SECRET);
     }
 
-    private Map<String, String> secretMap;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private volatile Map<String, String> secretMap;
 
     public AwsSecretJdbcConnectionDetails(Environment environment) {
         super(environment);
     }
 
     private String getSecretString() {
-        var arn = environment.getProperty(ENV_NAME_AWS_SECRET, "");
+        var arn = environment.getProperty(ENV_NAME_AWS_SECRET);
         var clientBuilder = SecretsManagerClient.builder()
-            .region(Region.of(arn.split(":")[3]));
+            .region(Region.of(parseRegion(arn)));
         try (var client = clientBuilder.build()) {
             var request = GetSecretValueRequest.builder()
                 .secretId(arn)
@@ -38,12 +42,16 @@ public class AwsSecretJdbcConnectionDetails extends AbstractJdbcConnectionDetail
 
     private Map<String, String> getSecretMap() {
         if (secretMap == null) {
-            var secretString = getSecretString();
-            try {
-                secretMap = new ObjectMapper()
-                    .readValue(secretString, new TypeReference<>() {});
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+            synchronized (this) {
+                if (secretMap == null) {
+                    var secretString = getSecretString();
+                    try {
+                        secretMap = objectMapper
+                            .readValue(secretString, new TypeReference<>() {});
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException("Failed to parse AWS secret JSON for database credentials", e);
+                    }
+                }
             }
         }
         return secretMap;
@@ -51,11 +59,13 @@ public class AwsSecretJdbcConnectionDetails extends AbstractJdbcConnectionDetail
 
     @Override
     public String getUsername() {
-        return getSecretMap().get("username");
+        var username = getSecretMap().get("username");
+        return throwIfEmpty(username, "Username must not be empty");
     }
 
     @Override
     public String getPassword() {
-        return getSecretMap().get("password");
+        var password = getSecretMap().get("password");
+        return throwIfEmpty(password, "Password must not be empty");
     }
 }

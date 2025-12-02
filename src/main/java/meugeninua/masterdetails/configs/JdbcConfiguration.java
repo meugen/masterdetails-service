@@ -18,6 +18,10 @@ public class JdbcConfiguration {
         if (EnvVarsJdbcConnectionDetails.isValidConfig(environment)) {
             return new EnvVarsJdbcConnectionDetails(environment);
         }
-        throw new RuntimeException("Invalid configuration");
+        throw new RuntimeException("""
+            Invalid JDBC configuration: either AWS_PGSQL_SECRET or
+            both PGSQL_USERNAME and PGSQL_PASSWORD environment variables must be set
+            """
+        );
     }
 }
