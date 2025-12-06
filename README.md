@@ -19,4 +19,4 @@
 * Terraform
 * AWS / AWS SDK
 
-### Can be tested at [masterdetails](https://9dp5zjmu4q.eu-central-1.awsapprunner.com/)
+### Can be tested at [masterdetails](https://masterdetails.meugen.in.ua/)
