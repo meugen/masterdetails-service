@@ -6,6 +6,7 @@ WORKDIR /app
 RUN ./mvnw package -DskipTests
 
 FROM ubuntu/jre:21-24.04_stable
+EXPOSE 8080
 LABEL authors="meugen"
 COPY --from=build /app/target/masterdetails-0.0.1-SNAPSHOT.jar /app/
 WORKDIR /app
