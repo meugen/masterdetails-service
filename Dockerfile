@@ -6,6 +6,9 @@ WORKDIR /app
 RUN ./mvnw package -DskipTests
 
 FROM ubuntu/jre:21-24.04_stable
+ENV PGSQL_HOSTNAME="" PGSQL_DATABASE="" PGSQL_USERNAME="" \
+    AZ_PGSQL_SECRET="" AZ_VAULT_URI="" \
+    REDIS_HOSTNAME="" REDIS_PORT="" REDIS_USE_SSL=false
 LABEL authors="meugen"
 COPY --from=build /app/target/masterdetails-0.0.1-SNAPSHOT.jar /app/
 WORKDIR /app
