@@ -1,6 +1,7 @@
 package meugeninua.masterdetails.configs;
 
 import meugeninua.masterdetails.configs.impls.jdbc_connection_details.AwsSecretJdbcConnectionDetails;
+import meugeninua.masterdetails.configs.impls.jdbc_connection_details.AzSecretJdbcConnectionDetails;
 import meugeninua.masterdetails.configs.impls.jdbc_connection_details.EnvVarsJdbcConnectionDetails;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.context.annotation.Bean;
@@ -15,11 +16,15 @@ public class JdbcConfiguration {
         if (AwsSecretJdbcConnectionDetails.isValidConfig(environment)) {
             return new AwsSecretJdbcConnectionDetails(environment);
         }
+        if (AzSecretJdbcConnectionDetails.isValidConfig(environment)) {
+            return new AzSecretJdbcConnectionDetails(environment);
+        }
         if (EnvVarsJdbcConnectionDetails.isValidConfig(environment)) {
             return new EnvVarsJdbcConnectionDetails(environment);
         }
         throw new RuntimeException("""
             Invalid JDBC configuration: either AWS_PGSQL_SECRET or
+            all of AZ_VAULT_URI, AZ_PGSQL_SECRET and PGSQL_USERNAME, or
             both PGSQL_USERNAME and PGSQL_PASSWORD environment variables must be set
             """
         );
