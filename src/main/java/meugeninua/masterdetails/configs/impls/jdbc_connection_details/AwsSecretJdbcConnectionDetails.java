@@ -18,7 +18,7 @@ public class AwsSecretJdbcConnectionDetails extends AbstractJdbcConnectionDetail
     private static final String ENV_NAME_AWS_SECRET = "AWS_PGSQL_SECRET";
 
     public static boolean isValidConfig(Environment environment) {
-        return environment.containsProperty(ENV_NAME_AWS_SECRET);
+        return new Validator().validate(environment);
     }
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -67,5 +67,14 @@ public class AwsSecretJdbcConnectionDetails extends AbstractJdbcConnectionDetail
     public String getPassword() {
         var password = getSecretMap().get("password");
         return throwIfEmpty(password, "Password must not be empty");
+    }
+
+    private static class Validator extends AbstractJdbcConnectionDetails.Validator {
+
+        @Override
+        boolean validate(Environment environment) {
+            return super.validate(environment)
+                && validateProperty(environment, ENV_NAME_AWS_SECRET);
+        }
     }
 }

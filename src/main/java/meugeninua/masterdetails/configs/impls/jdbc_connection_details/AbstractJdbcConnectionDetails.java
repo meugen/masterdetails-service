@@ -1,6 +1,7 @@
 package meugeninua.masterdetails.configs.impls.jdbc_connection_details;
 
-import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
+import jakarta.annotation.Nonnull;
+import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
 import org.springframework.core.env.Environment;
 
 import static meugeninua.masterdetails.util.StringUtil.throwIfEmpty;
@@ -18,7 +19,7 @@ public abstract class AbstractJdbcConnectionDetails implements JdbcConnectionDet
     }
 
     @Override
-    public String getJdbcUrl() {
+    public @Nonnull String getJdbcUrl() {
         var hostname = environment.getProperty(ENV_NAME_HOSTNAME);
         var port = environment.getProperty(ENV_NAME_PORT, "5432");
         var database = environment.getProperty(ENV_NAME_DATABASE, "masterdetails");
@@ -27,5 +28,17 @@ public abstract class AbstractJdbcConnectionDetails implements JdbcConnectionDet
             throwIfEmpty(port, "Port must not be empty"),
             throwIfEmpty(database, "Database must not be empty")
         );
+    }
+
+    abstract static class Validator {
+
+        boolean validate(Environment environment) {
+            return validateProperty(environment, ENV_NAME_HOSTNAME);
+        }
+
+        final boolean validateProperty(Environment environment, String propertyName) {
+            var value = environment.getProperty(propertyName);
+            return value != null && !value.isEmpty();
+        }
     }
 }
