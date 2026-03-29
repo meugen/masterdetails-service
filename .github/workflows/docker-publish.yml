@@ -67,11 +67,11 @@ jobs:
       - name: Build and push docker image
         id: build-and-push
         uses: docker/build-push-action@v6
-        env:
-          PGSQL_HOSTNAME: host.docker.internal
-          PGSQL_USERNAME: masterdetails
-          PGSQL_PASSWORD: ci_password
-          REDIS_HOSTNAME: host.docker.internal
+#        env:
+#          PGSQL_HOSTNAME: host.docker.internal
+#          PGSQL_USERNAME: masterdetails
+#          PGSQL_PASSWORD: ci_password
+#          REDIS_HOSTNAME: host.docker.internal
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
@@ -79,4 +79,4 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          build-args: PGSQL_HOSTNAME,PGSQL_USERNAME,PGSQL_PASSWORD,REDIS_HOSTNAME
+          build-args: PGSQL_HOSTNAME=host.docker.internal,PGSQL_USERNAME=masterdetails,PGSQL_PASSWORD=ci_password,REDIS_HOSTNAME=host.docker.internal
