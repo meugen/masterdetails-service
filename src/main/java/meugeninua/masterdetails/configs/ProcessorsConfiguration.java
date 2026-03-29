@@ -20,6 +20,11 @@ public class ProcessorsConfiguration {
     private static final String MASTER_URI_TEMPLATE = "/masters/{id}";
     private static final String DETAIL_URI_TEMPLATE = "/masters/{masterId}/details/{detailId}";
 
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
+
     @Bean("master")
     @RequestScope
     public Processor masterProcessor(
