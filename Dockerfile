@@ -14,7 +14,7 @@ COPY pom.xml mvnw /app/
 COPY src /app/src/
 COPY .mvn /app/.mvn/
 WORKDIR /app
-RUN ./mvnw package
+RUN ./mvnw package -Dspring.jpa.hibernate.ddl-auto=create
 
 FROM eclipse-temurin:25-jre-alpine
 LABEL authors="meugen"
