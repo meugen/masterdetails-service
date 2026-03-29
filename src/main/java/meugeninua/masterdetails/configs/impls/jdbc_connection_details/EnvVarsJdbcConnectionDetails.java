@@ -8,8 +8,7 @@ public class EnvVarsJdbcConnectionDetails extends AbstractJdbcConnectionDetails 
     private static final String ENV_NAME_PASSWORD = "PGSQL_PASSWORD";
 
     public static boolean isValidConfig(Environment environment) {
-        return environment.containsProperty(ENV_NAME_USERNAME)
-            && environment.containsProperty(ENV_NAME_PASSWORD);
+        return new Validator().validate(environment);
     }
 
     public EnvVarsJdbcConnectionDetails(Environment environment) {
@@ -24,5 +23,15 @@ public class EnvVarsJdbcConnectionDetails extends AbstractJdbcConnectionDetails 
     @Override
     public String getPassword() {
         return environment.getProperty(ENV_NAME_PASSWORD);
+    }
+
+    private static class Validator extends AbstractJdbcConnectionDetails.Validator {
+
+        @Override
+        boolean validate(Environment environment) {
+            return super.validate(environment)
+                && environment.containsProperty(ENV_NAME_USERNAME)
+                && environment.containsProperty(ENV_NAME_PASSWORD);
+        }
     }
 }

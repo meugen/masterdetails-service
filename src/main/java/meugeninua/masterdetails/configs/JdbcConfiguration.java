@@ -2,7 +2,7 @@ package meugeninua.masterdetails.configs;
 
 import meugeninua.masterdetails.configs.impls.jdbc_connection_details.AwsSecretJdbcConnectionDetails;
 import meugeninua.masterdetails.configs.impls.jdbc_connection_details.EnvVarsJdbcConnectionDetails;
-import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
+import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;

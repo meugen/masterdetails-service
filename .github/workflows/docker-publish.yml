@@ -18,6 +18,32 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: masterdetails
+          POSTGRES_PASSWORD: ci_password
+          POSTGRES_DB: masterdetails
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U masterdetails -d maserdetails"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      redis:
+        image: redis:8.2-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -41,6 +67,11 @@ jobs:
       - name: Build and push docker image
         id: build-and-push
         uses: docker/build-push-action@v6
+        env:
+          PGSQL_HOSTNAME: host.docker.internal
+          PGSQL_USERNAME: masterdetails
+          PGSQL_PASSWORD: ci_password
+          REDIS_HOSTNAME: host.docker.internal
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
@@ -48,3 +79,4 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: PGSQL_HOSTNAME,PGSQL_USERNAME,PGSQL_PASSWORD,REDIS_HOSTNAME

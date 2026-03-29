@@ -1,6 +1,10 @@
 package meugeninua.masterdetails.configs;
 
+import org.jspecify.annotations.Nullable;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -13,7 +17,7 @@ import java.util.logging.Logger;
 
 @Configuration
 @EnableCaching
-public class CachingConfiguration {
+public class CachingConfiguration implements CachingConfigurer {
 
     private final Logger logger = Logger.getLogger(CachingConfiguration.class.getName());
 
@@ -32,5 +36,11 @@ public class CachingConfiguration {
         }
 
         return new JedisConnectionFactory(configuration, clientConfigBuilder.build());
+    }
+
+    @Bean
+    @Override
+    public @Nullable CacheManager cacheManager() {
+        return new ConcurrentMapCacheManager();
     }
 }
