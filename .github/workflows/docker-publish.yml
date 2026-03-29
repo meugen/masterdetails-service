@@ -85,5 +85,5 @@ jobs:
             PGSQL_USERNAME
             REDIS_HOSTNAME
             DDL_AUTO=create
-          secrets: |
-            type=env,id=PGSQL_PASSWORD
+          secret-envs: |
+            key=PGSQL_PASSWORD,MY_SECRET=${PGSQL_PASSWORD}
