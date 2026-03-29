@@ -75,4 +75,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           add-hosts: host.docker.internal:host-gateway
-          build-args: PGSQL_HOSTNAME=host.docker.internal,PGSQL_USERNAME=masterdetails,PGSQL_PASSWORD=ci_password,REDIS_HOSTNAME=host.docker.internal
+          build-args: PGSQL_HOSTNAME=host.docker.internal;PGSQL_USERNAME=masterdetails;PGSQL_PASSWORD=ci_password;REDIS_HOSTNAME=host.docker.internal
