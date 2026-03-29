@@ -83,6 +83,7 @@ jobs:
           build-args: |
             PGSQL_HOSTNAME
             PGSQL_USERNAME
-            PGSQL_PASSWORD
             REDIS_HOSTNAME
             DDL_AUTO=create
+          secret-envs: |
+            PGSQL_PASSWORD
