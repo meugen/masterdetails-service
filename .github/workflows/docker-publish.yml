@@ -86,4 +86,4 @@ jobs:
             REDIS_HOSTNAME
             DDL_AUTO=create
           secret-envs: |
-            PGSQL_PASSWORD=PGSQL_PASSWORD
+            pgsql_password=PGSQL_PASSWORD
