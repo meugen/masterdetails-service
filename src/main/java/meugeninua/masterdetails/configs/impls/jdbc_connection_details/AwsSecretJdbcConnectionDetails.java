@@ -74,7 +74,7 @@ public class AwsSecretJdbcConnectionDetails extends AbstractJdbcConnectionDetail
         @Override
         boolean validate(Environment environment) {
             return super.validate(environment)
-                && environment.containsProperty(ENV_NAME_AWS_SECRET);
+                && validateProperty(environment, ENV_NAME_AWS_SECRET);
         }
     }
 }

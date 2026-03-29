@@ -30,10 +30,15 @@ public abstract class AbstractJdbcConnectionDetails implements JdbcConnectionDet
         );
     }
 
-    static class Validator {
+    abstract static class Validator {
 
         boolean validate(Environment environment) {
-            return environment.containsProperty(ENV_NAME_HOSTNAME);
+            return validateProperty(environment, ENV_NAME_HOSTNAME);
+        }
+
+        final boolean validateProperty(Environment environment, String propertyName) {
+            var value = environment.getProperty(propertyName);
+            return value != null && !value.isBlank();
         }
     }
 }

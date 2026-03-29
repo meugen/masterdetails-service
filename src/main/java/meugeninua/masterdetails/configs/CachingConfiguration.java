@@ -2,12 +2,11 @@ package meugeninua.masterdetails.configs;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
@@ -17,7 +16,7 @@ import java.util.logging.Logger;
 
 @Configuration
 @EnableCaching
-public class CachingConfiguration implements CachingConfigurer {
+public class CachingConfiguration {
 
     private final Logger logger = Logger.getLogger(CachingConfiguration.class.getName());
 
@@ -39,8 +38,7 @@ public class CachingConfiguration implements CachingConfigurer {
     }
 
     @Bean
-    @Override
-    public @Nullable CacheManager cacheManager() {
-        return new ConcurrentMapCacheManager();
+    public @Nullable CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+        return RedisCacheManager.create(connectionFactory);
     }
 }

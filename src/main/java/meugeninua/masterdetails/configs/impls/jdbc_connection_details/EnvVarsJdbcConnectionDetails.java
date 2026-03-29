@@ -30,8 +30,8 @@ public class EnvVarsJdbcConnectionDetails extends AbstractJdbcConnectionDetails 
         @Override
         boolean validate(Environment environment) {
             return super.validate(environment)
-                && environment.containsProperty(ENV_NAME_USERNAME)
-                && environment.containsProperty(ENV_NAME_PASSWORD);
+                && validateProperty(environment, ENV_NAME_USERNAME)
+                && validateProperty(environment, ENV_NAME_PASSWORD);
         }
     }
 }
