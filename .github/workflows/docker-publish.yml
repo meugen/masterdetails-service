@@ -48,6 +48,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run tests
+        env:
+          PGSQL_HOSTNAME: localhost
+          PGSQL_USERNAME: masterdetails
+          PGSQL_PASSWORD: ci_password
+          REDIS_HOSTNAME: localhost
+        run: ./mvnw test
+
       - name: Setup Docker buildx
         uses: docker/setup-buildx-action@v3
 
@@ -79,4 +94,4 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          build-args: PGSQL_HOSTNAME=host.docker.internal,PGSQL_USERNAME=masterdetails,PGSQL_PASSWORD=ci_password,REDIS_HOSTNAME=host.docker.internal
+#          build-args: PGSQL_HOSTNAME=host.docker.internal,PGSQL_USERNAME=masterdetails,PGSQL_PASSWORD=ci_password,REDIS_HOSTNAME=host.docker.internal
