@@ -85,3 +85,4 @@ jobs:
             PGSQL_USERNAME
             PGSQL_PASSWORD
             REDIS_HOSTNAME
+            DDL_AUTO=create

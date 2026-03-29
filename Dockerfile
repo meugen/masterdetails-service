@@ -9,12 +9,13 @@ ARG AWS_PGSQL_SECRET
 ARG REDIS_HOSTNAME
 ARG REDIS_PORT
 ARG REDIS_USE_SSL
+ARG DDL_AUTO=validate
 
 COPY pom.xml mvnw /app/
 COPY src /app/src/
 COPY .mvn /app/.mvn/
 WORKDIR /app
-RUN ./mvnw package -Dspring.jpa.hibernate.ddl-auto=create
+RUN ./mvnw package -Dspring.jpa.hibernate.ddl-auto=$DDL_AUTO
 
 FROM eclipse-temurin:25-jre-alpine
 LABEL authors="meugen"
