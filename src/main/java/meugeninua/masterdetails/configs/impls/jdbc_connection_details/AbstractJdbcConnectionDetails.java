@@ -38,7 +38,7 @@ public abstract class AbstractJdbcConnectionDetails implements JdbcConnectionDet
 
         final boolean validateProperty(Environment environment, String propertyName) {
             var value = environment.getProperty(propertyName);
-            return value != null && !value.isBlank();
+            return value != null && !value.isEmpty();
         }
     }
 }
