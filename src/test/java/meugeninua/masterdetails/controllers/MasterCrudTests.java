@@ -1,23 +1,23 @@
 package meugeninua.masterdetails.controllers;
 
-import com.jayway.jsonpath.JsonPath;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.MediaType;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 import static meugeninua.masterdetails.util.TestUtil.buildClient;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MasterCrudTests {
 
     @LocalServerPort
     private int port;
 
-    private static Number masterId;
+    private final AtomicLong masterId = new AtomicLong();
 
     @Test
     @Order(1)
@@ -32,23 +32,20 @@ class MasterCrudTests {
 
         buildClient(port).post()
             .uri("/masters")
+            .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(body)
-            .header("Content-Type", "application/json")
             .exchange()
             .expectStatus().isCreated()
             .expectBody()
             .jsonPath("$.id").isNumber()
-            .consumeWith(response -> {
-                String responseBody = new String(response.getResponseBody());
-                masterId = JsonPath.read(responseBody, "$.id");
-            });
+            .jsonPath("$.id").value(Long.class, masterId::set);
     }
 
     @Test
     @Order(2)
     void whenMasterGet_thenResponseOk() {
         buildClient(port).get()
-            .uri("/masters/{masterId}", masterId)
+            .uri("/masters/{masterId}", masterId.get())
             .exchange()
             .expectStatus().isOk();
     }
@@ -65,9 +62,9 @@ class MasterCrudTests {
             """;
 
         buildClient(port).put()
-            .uri("/masters/{masterId}", masterId)
+            .uri("/masters/{masterId}", masterId.get())
+            .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(body)
-            .header("Content-Type", "application/json")
             .exchange()
             .expectStatus().isOk();
     }
@@ -76,7 +73,7 @@ class MasterCrudTests {
     @Order(4)
     void whenMasterDelete_thenResponseNoContent() {
         buildClient(port).delete()
-            .uri("/masters/{masterId}", masterId)
+            .uri("/masters/{masterId}", masterId.get())
             .exchange()
             .expectStatus().isNoContent();
     }
@@ -85,7 +82,7 @@ class MasterCrudTests {
     @Order(5)
     void whenMasterDeleted_thenResponseNotFound() {
         buildClient(port).get()
-            .uri("/masters/{masterId}", masterId)
+            .uri("/masters/{masterId}", masterId.get())
             .exchange()
             .expectStatus().isNotFound();
     }
