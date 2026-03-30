@@ -4,6 +4,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 public class TestUtil {
 
+    private TestUtil() {}
+
     public static WebTestClient buildClient(int port) {
         return buildClient("localhost", port);
     }
