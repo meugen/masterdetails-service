@@ -12,7 +12,7 @@ import static meugeninua.masterdetails.util.TestUtil.buildClient;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class DetailCrudTests {
+class DetailCrudTests {
 
     @LocalServerPort
     private int port;
