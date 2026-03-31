@@ -15,13 +15,13 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import java.util.logging.Logger;
 
 @Configuration
-@ConditionalOnMissingBean(CacheManager.class)
 @EnableCaching
 public class CachingConfiguration {
 
     private final Logger logger = Logger.getLogger(CachingConfiguration.class.getName());
 
     @Bean
+    @ConditionalOnMissingBean(CacheManager.class)
     public RedisConnectionFactory jedisConnectionFactory(Environment environment) {
         var hostname = environment.getProperty("REDIS_HOSTNAME", "localhost");
         var port = environment.getProperty("REDIS_PORT", Integer.class, 6379);
@@ -39,6 +39,7 @@ public class CachingConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
         return RedisCacheManager.create(connectionFactory);
     }
