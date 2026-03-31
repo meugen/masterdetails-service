@@ -1,20 +1,10 @@
 FROM eclipse-temurin:25-jdk-alpine AS build
 
-ARG PGSQL_HOSTNAME
-ARG PGSQL_PORT
-ARG PGSQL_DATABASE
-ARG PGSQL_USERNAME
-ARG REDIS_HOSTNAME
-ARG REDIS_PORT
-ARG REDIS_USE_SSL
-ARG DDL_AUTO=validate
-
 COPY pom.xml mvnw /app/
-COPY src /app/src/
+COPY src/main /app/src/main/
 COPY .mvn /app/.mvn/
 WORKDIR /app
-RUN --mount=type=secret,id=pgsql_password,env=PGSQL_PASSWORD \
-    ./mvnw package -Dspring.jpa.hibernate.ddl-auto=$DDL_AUTO
+RUN ./mvnw package -DskipTests
 
 FROM eclipse-temurin:25-jre-alpine
 LABEL authors="meugen"

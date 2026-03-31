@@ -1,5 +1,6 @@
 package meugeninua.masterdetails.configs;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,7 @@ public class CachingConfiguration {
     private final Logger logger = Logger.getLogger(CachingConfiguration.class.getName());
 
     @Bean
+    @ConditionalOnMissingBean(CacheManager.class)
     public RedisConnectionFactory jedisConnectionFactory(Environment environment) {
         var hostname = environment.getProperty("REDIS_HOSTNAME", "localhost");
         var port = environment.getProperty("REDIS_PORT", Integer.class, 6379);
@@ -37,6 +39,7 @@ public class CachingConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
         return RedisCacheManager.create(connectionFactory);
     }
