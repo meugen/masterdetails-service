@@ -1,11 +1,10 @@
 package meugeninua.masterdetails.controllers;
 
+import meugeninua.masterdetails.configs.NoOpCachingConfiguration;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.support.NoOpCacheManager;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -14,6 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import static meugeninua.masterdetails.util.TestUtil.buildClient;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Import(NoOpCachingConfiguration.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MasterResponseTests {
@@ -23,16 +23,11 @@ class MasterResponseTests {
 
     private final AtomicLong masterId = new AtomicLong();
 
-    @Bean
-    public CacheManager cacheManager() {
-        return new NoOpCacheManager();
-    }
-
     @AfterAll
     void deleteMaster() {
         buildClient(port).delete()
             .uri("/masters/{masterId}", masterId.get())
-            .exchangeSuccessfully();
+            .exchange();
     }
 
     private WebTestClient.BodyContentSpec validateFieldsTypes(WebTestClient.BodyContentSpec spec) {

@@ -1,5 +1,6 @@
 package meugeninua.masterdetails.configs;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,7 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import java.util.logging.Logger;
 
 @Configuration
+@ConditionalOnMissingBean(CacheManager.class)
 @EnableCaching
 public class CachingConfiguration {
 
