@@ -14,7 +14,8 @@ export PGSQL_PASSWORD=test_password
 export REDIS_HOSTNAME=localhost
 export REDIS_PORT=6378
 
-./mvnw clean && ./mvnw test \
+./mvnw clean test \
+  -Dmaven.repo.local=./.m2/$(uuidgen) \
   -Dspring.jpa.hibernate.ddl-auto=create
 RESULT=$?
 
