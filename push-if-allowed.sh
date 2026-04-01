@@ -14,9 +14,8 @@ export PGSQL_PASSWORD=test_password
 export REDIS_HOSTNAME=localhost
 export REDIS_PORT=6378
 
-./mvnw test \
-  -Dspring.jpa.hibernate.ddl-auto=create \
-  -Dmaven.build.cache.enabled=false
+./mvnw clean && ./mvnw test \
+  -Dspring.jpa.hibernate.ddl-auto=create
 RESULT=$?
 
 docker stop test_postgres test_redis
