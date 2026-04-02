@@ -94,6 +94,15 @@ class DetailCrudTests {
 
     @Test
     @Order(4)
+    void whenDetailGetAll_thenResponseOk() {
+        buildClient(port).get()
+            .uri("/masters/{masterId}/details", masterId.get())
+            .exchange()
+            .expectStatus().isOk();
+    }
+
+    @Test
+    @Order(5)
     void whenDetailDelete_thenResponseNoContent() {
         buildClient(port).delete()
             .uri("/masters/{masterId}/details/{detailId}", masterId.get(), detailId.get())
@@ -102,7 +111,7 @@ class DetailCrudTests {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     void whenDetailDeleted_thenResponseNotFound() {
         buildClient(port).get()
             .uri("/masters/{masterId}/details/{detailId}", masterId.get(), detailId.get())
