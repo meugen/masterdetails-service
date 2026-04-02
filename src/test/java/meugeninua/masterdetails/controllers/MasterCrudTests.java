@@ -71,6 +71,15 @@ class MasterCrudTests {
 
     @Test
     @Order(4)
+    void whenMasterGetAll_thenResponseOk() {
+        buildClient(port).get()
+            .uri("/masters")
+            .exchange()
+            .expectStatus().isOk();
+    }
+
+    @Test
+    @Order(5)
     void whenMasterDelete_thenResponseNoContent() {
         buildClient(port).delete()
             .uri("/masters/{masterId}", masterId.get())
@@ -79,7 +88,7 @@ class MasterCrudTests {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     void whenMasterDeleted_thenResponseNotFound() {
         buildClient(port).get()
             .uri("/masters/{masterId}", masterId.get())

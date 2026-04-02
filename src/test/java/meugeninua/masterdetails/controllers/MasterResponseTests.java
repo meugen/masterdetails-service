@@ -30,20 +30,20 @@ class MasterResponseTests {
             .exchange();
     }
 
-    private WebTestClient.BodyContentSpec validateFieldsTypes(WebTestClient.BodyContentSpec spec) {
+    private WebTestClient.BodyContentSpec validateFieldsTypes(WebTestClient.BodyContentSpec spec, ResponseType responseType) {
         return spec
-            .jsonPath("$.id").isNumber()
-            .jsonPath("$.name").exists()
-            .jsonPath("$.details").isArray()
-            .jsonPath("$.count").isNumber()
-            .jsonPath("$.uri").exists()
-            .jsonPath("$.details[0].id").isNumber()
-            .jsonPath("$.details[0].name").exists();
+            .jsonPath(responseType.buildExpression(".id")).isNumber()
+            .jsonPath(responseType.buildExpression(".name")).exists()
+            .jsonPath(responseType.buildExpression(".details")).isArray()
+            .jsonPath(responseType.buildExpression(".count")).isNumber()
+            .jsonPath(responseType.buildExpression(".uri")).exists()
+            .jsonPath(responseType.buildExpression(".details[0].id")).isNumber()
+            .jsonPath(responseType.buildExpression(".details[0].name")).exists();
     }
 
-    private void validateUri(WebTestClient.BodyContentSpec spec) {
+    private void validateUri(WebTestClient.BodyContentSpec spec, ResponseType responseType) {
         var uri = String.format("http://localhost:%d/masters/%d", port, masterId.get());
-        spec.jsonPath("$.uri").isEqualTo(uri);
+        spec.jsonPath(responseType.buildExpression(".uri")).isEqualTo(uri);
     }
 
     @Test
@@ -67,12 +67,12 @@ class MasterResponseTests {
             .bodyValue(body)
             .exchangeSuccessfully()
             .expectBody();
-        spec = validateFieldsTypes(spec)
+        spec = validateFieldsTypes(spec, ResponseType.SINGLE)
             .jsonPath("$.id").value(Long.class, masterId::set)
             .jsonPath("$.name").isEqualTo("Master 1")
             .jsonPath("$.count").isEqualTo(1)
             .jsonPath("$.details[0].name").isEqualTo("Detail 1 in Master 1");
-        validateUri(spec);
+        validateUri(spec, ResponseType.SINGLE);
     }
 
     @Test
@@ -82,12 +82,12 @@ class MasterResponseTests {
             .uri("/masters/{masterId}", masterId.get())
             .exchangeSuccessfully()
             .expectBody();
-        spec = validateFieldsTypes(spec)
+        spec = validateFieldsTypes(spec, ResponseType.SINGLE)
             .jsonPath("$.id").isEqualTo(masterId.get())
             .jsonPath("$.name").isEqualTo("Master 1")
             .jsonPath("$.count").isEqualTo(1)
             .jsonPath("$.details[0].name").isEqualTo("Detail 1 in Master 1");
-        validateUri(spec);
+        validateUri(spec, ResponseType.SINGLE);
     }
 
     @Test
@@ -111,11 +111,40 @@ class MasterResponseTests {
             .bodyValue(body)
             .exchangeSuccessfully()
             .expectBody();
-        spec = validateFieldsTypes(spec)
+        spec = validateFieldsTypes(spec, ResponseType.SINGLE)
             .jsonPath("$.id").isEqualTo(masterId.get())
             .jsonPath("$.name").isEqualTo("Master 1 (updated)")
             .jsonPath("$.count").isEqualTo(2)
             .jsonPath("$.details[0].name").isEqualTo("Detail 1 in Master 1 (updated)");
-        validateUri(spec);
+        validateUri(spec, ResponseType.SINGLE);
+    }
+
+    @Test
+    @Order(4)
+    void whenMasterGetAll_thenResponseBodyValid() {
+        var spec = buildClient(port).get()
+            .uri("/masters")
+            .exchangeSuccessfully()
+            .expectBody()
+            .jsonPath("$").isArray();
+        spec = validateFieldsTypes(spec, ResponseType.ARRAY)
+            .jsonPath("$[0].id").isEqualTo(masterId.get())
+            .jsonPath("$[0].name").isEqualTo("Master 1 (updated)")
+            .jsonPath("$[0].count").isEqualTo(1)
+            .jsonPath("$[0].details[0].name").isEqualTo("Detail 1 in Master 1 (updated)");
+        validateUri(spec, ResponseType.ARRAY);
+    }
+
+    private enum ResponseType {
+        SINGLE(""), ARRAY("[0]");
+
+        private final  String value;
+        ResponseType(String value) {
+            this.value = value;
+        }
+
+        public String buildExpression(String suffix) {
+            return "$" + value + suffix;
+        }
     }
 }
