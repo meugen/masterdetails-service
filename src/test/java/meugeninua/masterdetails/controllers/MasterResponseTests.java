@@ -138,7 +138,7 @@ class MasterResponseTests {
     private enum ResponseType {
         SINGLE(""), ARRAY("[0]");
 
-        private final  String value;
+        private final String value;
         ResponseType(String value) {
             this.value = value;
         }
