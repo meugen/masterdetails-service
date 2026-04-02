@@ -130,7 +130,7 @@ class MasterResponseTests {
         spec = validateFieldsTypes(spec, ResponseType.ARRAY)
             .jsonPath("$[0].id").isEqualTo(masterId.get())
             .jsonPath("$[0].name").isEqualTo("Master 1 (updated)")
-            .jsonPath("$[0].count").isEqualTo(1)
+            .jsonPath("$[0].count").isEqualTo(2)
             .jsonPath("$[0].details[0].name").isEqualTo("Detail 1 in Master 1 (updated)");
         validateUri(spec, ResponseType.ARRAY);
     }
