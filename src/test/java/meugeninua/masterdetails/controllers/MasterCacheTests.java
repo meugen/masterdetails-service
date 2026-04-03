@@ -101,13 +101,13 @@ class MasterCacheTests implements CachingConstants {
 
         redisTemplate.delete(masterByIdKey(id));
         buildClient(port).post()
-            .uri("/masters", id)
+            .uri("/masters")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(body)
             .exchangeSuccessfully(); // Created entity cached
         buildClient(port).get()
             .uri("/masters/{id}", id)
-            .exchangeSuccessfully(); // No need to retrieve entiy aagain
+            .exchangeSuccessfully(); // No need to retrieve entity again
 
         verify(masterRepository, never()).findById(id);
     }
