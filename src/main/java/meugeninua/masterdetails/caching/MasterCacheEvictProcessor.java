@@ -32,9 +32,9 @@ public class MasterCacheEvictProcessor implements Processor, CachingConstants {
     private void processMasterDto(MasterDto masterDto) {
         var detailByIdPattern = String.format("%s::%d/*", CACHE_DETAIL_BY_ID, masterDto.getId());
         var keys = new HashSet<>(redisUtil.keys(detailByIdPattern));
-        keys.add(String.format("%s::%d", CACHE_DETAILS_LIST, masterDto.getId()));
-        keys.add(String.format("%s::%d", CACHE_MASTER_BY_ID, masterDto.getId()));
-        keys.add(String.format("%s::", CACHE_MASTERS_LIST));
+        keys.add(detailsListKey(masterDto.getId()));
+        keys.add(masterByIdKey(masterDto.getId()));
+        keys.add(mastersListKey());
         redisUtil.delete(keys);
     }
 }
