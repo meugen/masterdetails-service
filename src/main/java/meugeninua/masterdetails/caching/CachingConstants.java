@@ -18,4 +18,8 @@ public interface CachingConstants {
     default String detailsListKey(Long masterId) {
         return String.format("%s::%d", CACHE_DETAILS_LIST, masterId);
     }
+
+    default String detailByIdKey(Long masterId, Long detailId) {
+        return String.format("%s::%d/%d", CACHE_DETAIL_BY_ID, masterId, detailId);
+    }
 }

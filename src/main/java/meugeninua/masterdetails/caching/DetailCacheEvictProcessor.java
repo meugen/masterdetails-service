@@ -31,10 +31,10 @@ public class DetailCacheEvictProcessor implements Processor, CachingConstants {
 
     private void processDetailDto(DetailDto detailDto) {
         var keys = Set.of(
-            String.format("%s::", CACHE_MASTERS_LIST),
-            String.format("%s::%d", CACHE_MASTER_BY_ID, detailDto.getMasterId()),
-            String.format("%s::%d", CACHE_DETAILS_LIST, detailDto.getMasterId()),
-            String.format("%s::%d/%d", CACHE_DETAIL_BY_ID, detailDto.getMasterId(), detailDto.getId())
+            mastersListKey(),
+            masterByIdKey(detailDto.getMasterId()),
+            detailsListKey(detailDto.getMasterId()),
+            detailByIdKey(detailDto.getMasterId(), detailDto.getId())
         );
         redisUtil.delete(keys);
     }
