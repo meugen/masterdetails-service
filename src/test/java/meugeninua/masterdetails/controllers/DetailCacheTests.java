@@ -335,6 +335,7 @@ class DetailCacheTests implements CachingConstants {
         when(detailRepository.findByMasterIdAndId(masterId, deletedDetailId)).thenReturn(Optional.of(deletedDetail));
         when(detailRepository.findByMasterIdAndId(masterId, otherDetailId)).thenReturn(Optional.of(otherDetail));
 
+        redisTemplate.delete(detailByIdKey(masterId, otherDetailId));
         buildClient(port).get()
             .uri("/masters/{masterId}/details/{detailId}", masterId, otherDetailId)
             .exchangeSuccessfully(); // Entity cached
