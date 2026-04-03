@@ -38,7 +38,8 @@ class MasterResponseTests {
             .jsonPath(responseType.buildExpression(".count")).isNumber()
             .jsonPath(responseType.buildExpression(".uri")).exists()
             .jsonPath(responseType.buildExpression(".details[0].id")).isNumber()
-            .jsonPath(responseType.buildExpression(".details[0].name")).exists();
+            .jsonPath(responseType.buildExpression(".details[0].name")).exists()
+            .jsonPath(responseType.buildExpression(".details[0].masterId")).isNumber();
     }
 
     private void validateUri(WebTestClient.BodyContentSpec spec, ResponseType responseType) {
