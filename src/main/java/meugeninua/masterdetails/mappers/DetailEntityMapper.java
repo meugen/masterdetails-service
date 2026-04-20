@@ -20,5 +20,4 @@ public interface DetailEntityMapper {
     }
     @Mapping(target = "masterId", source = "entity.master.id")
     DetailDto mapToDto(Detail entity);
-    List<DetailDto> mapToDtoList(List<Detail> entityList);
 }
