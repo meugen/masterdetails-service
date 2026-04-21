@@ -5,36 +5,11 @@ import org.springframework.web.util.UriBuilder;
 
 import java.net.URI;
 
-public class DetailDto implements HasUri {
-
-    private Long id;
-    @NotNull
-    private String name;
-    private Long masterId;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Long getMasterId() {
-        return masterId;
-    }
-
-    public void setMasterId(Long masterId) {
-        this.masterId = masterId;
-    }
+public record DetailDto(
+    Long id,
+    @NotNull String name,
+    Long masterId
+) implements HasUri {
 
     @Override
     public URI buildUri(UriBuilder builder) {

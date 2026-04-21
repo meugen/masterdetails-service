@@ -32,9 +32,9 @@ public class DetailCacheEvictProcessor implements Processor, CachingConstants {
     private void processDetailDto(DetailDto detailDto) {
         var keys = Set.of(
             mastersListKey(),
-            masterByIdKey(detailDto.getMasterId()),
-            detailsListKey(detailDto.getMasterId()),
-            detailByIdKey(detailDto.getMasterId(), detailDto.getId())
+            masterByIdKey(detailDto.masterId()),
+            detailsListKey(detailDto.masterId()),
+            detailByIdKey(detailDto.masterId(), detailDto.id())
         );
         redisUtil.delete(keys);
     }

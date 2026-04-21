@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.StreamSupport;
 
@@ -68,8 +67,7 @@ public class MasterService implements CachingConstants {
     @Transactional
     @CachePut(value = CACHE_MASTER_BY_ID, key = "#result['id']")
     public Map<String, Object> create(MasterDto master) {
-        var details = master.getDetails();
-        master.setDetails(new ArrayList<>());
+        var details = master.details();
         var masterEntity = masterMapper.mapToEntity(master);
         masterEntity.setId(null);
         masterEntity.setDetails(detailMapper.mapToEntityList(masterEntity, details));
@@ -93,8 +91,7 @@ public class MasterService implements CachingConstants {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        var details = master.getDetails();
-        master.setDetails(new ArrayList<>());
+        var details = master.details();
         var masterEntity = masterMapper.mapToEntity(master);
         masterEntity.setId(id);
         masterEntity.setDetails(detailMapper.mapToEntityList(masterEntity, details));
