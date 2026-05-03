@@ -59,7 +59,7 @@ jobs:
           PGSQL_USERNAME: masterdetails
           PGSQL_PASSWORD: ci_password
           REDIS_HOSTNAME: localhost
-        run: ./mvnw test -Dspring.jpa.hibernate.ddl-auto=create
+        run: ./mvnw test
 
       - name: Setup Docker buildx
         uses: docker/setup-buildx-action@v3

@@ -15,8 +15,7 @@ export REDIS_HOSTNAME=localhost
 export REDIS_PORT=6378
 
 ./mvnw clean test \
-  -Dmaven.repo.local=./.m2/$(uuidgen) \
-  -Dspring.jpa.hibernate.ddl-auto=create
+  -Dmaven.repo.local=./.m2/$(uuidgen)
 RESULT=$?
 
 docker stop test_postgres test_redis
