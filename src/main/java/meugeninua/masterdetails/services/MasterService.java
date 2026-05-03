@@ -2,6 +2,7 @@ package meugeninua.masterdetails.services;
 
 import meugeninua.masterdetails.caching.CachingConstants;
 import meugeninua.masterdetails.dto.MasterDto;
+import meugeninua.masterdetails.exceptions.MasterNotFoundException;
 import meugeninua.masterdetails.mappers.DetailEntityMapper;
 import meugeninua.masterdetails.mappers.MasterEntityMapper;
 import meugeninua.masterdetails.processors.Processor;
@@ -54,7 +55,7 @@ public class MasterService implements CachingConstants {
             .map(masterMapper::mapToDto)
             .map(masterProcessor::process)
             .orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+                () -> new MasterNotFoundException(id)
             );
     }
 
@@ -88,7 +89,7 @@ public class MasterService implements CachingConstants {
     @CachePut(value = CACHE_MASTER_BY_ID, key = "#result['id']")
     public Map<String, Object> update(Long id, MasterDto master) {
         if (!masterRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new MasterNotFoundException(id);
         }
 
         var details = master.details();
@@ -109,7 +110,7 @@ public class MasterService implements CachingConstants {
     @Transactional
     public void deleteById(Long id) {
         var master = masterRepository.findById(id).orElseThrow(
-            () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+            () -> new MasterNotFoundException(id)
         );
         var dto = masterMapper.mapToDto(master);
         masterRepository.delete(master);

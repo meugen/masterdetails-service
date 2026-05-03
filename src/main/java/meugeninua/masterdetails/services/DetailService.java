@@ -2,6 +2,8 @@ package meugeninua.masterdetails.services;
 
 import meugeninua.masterdetails.caching.CachingConstants;
 import meugeninua.masterdetails.dto.DetailDto;
+import meugeninua.masterdetails.exceptions.DetailNotFoundException;
+import meugeninua.masterdetails.exceptions.MasterNotFoundException;
 import meugeninua.masterdetails.mappers.DetailEntityMapper;
 import meugeninua.masterdetails.processors.Processor;
 import meugeninua.masterdetails.repositories.DetailRepository;
@@ -57,7 +59,7 @@ public class DetailService implements CachingConstants {
             .map(detailMapper::mapToDto)
             .map(detailProcessor::process)
             .orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+                () -> new DetailNotFoundException(masterId, detailId)
             );
     }
 
@@ -72,7 +74,7 @@ public class DetailService implements CachingConstants {
     @CachePut(value = CACHE_DETAIL_BY_ID, key = "#result['masterId']+'/'+#result['id']")
     public Map<String, Object> create(Long masterId, DetailDto detailDto) {
         var master = masterRepository.findById(masterId).orElseThrow(
-            () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+            () -> new MasterNotFoundException(masterId)
         );
         var entity = detailMapper.mapToEntity(master, detailDto);
         entity.setId(null);
@@ -94,10 +96,10 @@ public class DetailService implements CachingConstants {
     @CachePut(value = CACHE_DETAIL_BY_ID, key = "#result['masterId']+'/'+#result['id']")
     public Map<String, Object> update(Long masterId, Long detailId, DetailDto detailDto) {
         if (!detailRepository.existsByMasterIdEqualsAndIdEquals(masterId, detailId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new DetailNotFoundException(masterId, detailId);
         }
         var master = masterRepository.findById(masterId).orElseThrow(
-            () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+            () -> new MasterNotFoundException(masterId)
         );
         var entity = detailMapper.mapToEntity(master, detailDto);
         entity.setId(detailId);
@@ -117,7 +119,7 @@ public class DetailService implements CachingConstants {
     public void deleteById(Long masterId, Long detailId) {
         var detail = detailRepository.findByMasterIdAndId(masterId, detailId)
             .orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+                () -> new DetailNotFoundException(masterId, detailId)
             );
         var dto = detailMapper.mapToDto(detail);
         detailRepository.delete(detail);
